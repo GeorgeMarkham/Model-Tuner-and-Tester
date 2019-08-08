@@ -12,10 +12,10 @@ import pandas as pd
 import numpy as np
 
 # './IEMOCAP_features_2.csv'
-features_IME = pd.read_csv('./IEMOCAP_features_2.csv')
+features_IME = pd.read_csv('https://raw.githubusercontent.com/GeorgeMarkham/Model-Tuner-and-Tester/master/IEMOCAP_features_2.csv')
 
 # './RAVDASS_features_2.csv'
-feature_RAVDASS = pd.read_csv('./RAVDASS_features_2.csv')
+feature_RAVDASS = pd.read_csv('https://raw.githubusercontent.com/GeorgeMarkham/Model-Tuner-and-Tester/master/RAVDASS_features_2.csv')
 
 
 features_IME = features_IME.drop(columns=["File_Name", "Session", "val", "act", "dom", "wav_file_name"])
