@@ -1,0 +1,8 @@
+[Unit]
+Description=Model Tuner Service
+
+[Service]
+ExecStart= /start_tuning.sh
+
+[Install]
+WantedBy=multi-user.target
