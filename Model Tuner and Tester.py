@@ -165,9 +165,9 @@ reports = []
 
 
 
-from time import perf_counter_ns
+# from time import perf_counter_ns
 
-start = perf_counter_ns()
+# start = perf_counter_ns()
 
 p = {
         'booster'          : ['gbtree', 'gblinear','dart'],
@@ -214,4 +214,4 @@ with open("./xgboost_report.txt", 'w') as of:
 
 # bal_accs.append(balanced_accuracy_score(np.array(y_test), np.array(pred)))
 
-print("Time:\t", (perf_counter_ns() - start)*1e-9)
+# print("Time:\t", (perf_counter_ns() - start)*1e-9)
