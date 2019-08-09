@@ -88,12 +88,12 @@ parameters = [
         'max_depth'         : list(range(25, 125, 25)),
         'random_state'      : [42],
     },
-#     AdaBoost
-    {
-        'base_estimator' : [RandomForestClassifier(), SVC(), XGBClassifier()],
-        'n_estimators'   : [50, 100, 200, 300, 400, 500],
-        'random_state'   : [42]
-    },
+# #     AdaBoost
+#     {
+#         'base_estimator' : [RandomForestClassifier(), SVC(), XGBClassifier()],
+#         'n_estimators'   : [50, 100, 200, 300, 400, 500],
+#         'random_state'   : [42]
+#     },
 #     SVM
     {
         'C'      : [2**x for x in list(range(-2, 2, 1))],
@@ -120,7 +120,7 @@ estimators = [
     KNeighborsClassifier(), 
     MLPClassifier(), 
     RandomForestClassifier(), 
-    AdaBoostClassifier(), 
+    # AdaBoostClassifier(), 
     SVC(), 
     XGBClassifier(early_stopping_rounds=10, nthreads=1, objective='multi:softmax', max_depth=10)
 ]
