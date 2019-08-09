@@ -5,7 +5,7 @@
 
 # ## 1. Get the data
 
-# In[1]:
+# In[2]:
 
 
 import pandas as pd
@@ -35,7 +35,7 @@ df = df.drop(columns=['Emotion'])
 # ## 2. Split the data into training and testing sets
 # If the data was using raw emotion values, e.g 'neu' instead of 0 then one would need to use a label encoder to encode each unique label as an integer between 0 and n_classes-1. Label encoding can be done using the Sci-Kit Learn LabelEncoder class https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html.
 
-# In[11]:
+# In[3]:
 
 
 from sklearn.model_selection import train_test_split
@@ -51,7 +51,7 @@ X_train, X_test, y_train, y_test = train_test_split(x, y, random_state=42, strat
 
 # # 3. Import the necessary models
 
-# In[61]:
+# In[4]:
 
 
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
@@ -64,7 +64,7 @@ from xgboost import XGBClassifier
 # # 4. Setup the model parameters
 # Each model must be tuned by a different set of parameters, therefore each parameter object must be setup in an array to be easily and automatically accessed.
 
-# In[53]:
+# In[5]:
 
 
 parameters = [
@@ -97,24 +97,23 @@ parameters = [
 #     SVM
     {
         'C'      : [2**x for x in list(range(-2, 2, 1))],
-        'kernel' : ['rbf', 'linear', 'poly', 'sigmoid', 'precomputed'],
-        'gamma'  : [2**x for x in list(range(-15, 3, 3))]
+        'kernel' : ['rbf','sigmoid'],
+        'gamma'  : [2**x for x in list(range(-12, 3, 3))]
     },
 #     XGBClassifier
     {
         'booster'          : ['gbtree', 'gblinear','dart'],
         'eta'              : [10**x for x in list(range(-5, -1, 1))],
-        'max_depth'        : list(range(3, 11, 1)),
-        'gamma'            : [x/10.0 for x in range(0,5)],
+        'max_depth'        : list(range(3, 10, 2)),
+        'gamma'            : [x/10.0 for x in range(1,5)],
         'colsample_bytree' : [x/10.0 for x in range(5,11)],
-        'nthread'          : [-1]
     }
 ]
 
 
 # # 5. Setup the models
 
-# In[57]:
+# In[6]:
 
 
 estimators = [
@@ -123,13 +122,11 @@ estimators = [
     RandomForestClassifier(), 
     AdaBoostClassifier(), 
     SVC(), 
-    XGBClassifier()
+    XGBClassifier(early_stopping_rounds=10, nthreads=1, objective='multi:softmax', max_depth=10)
 ]
 
 
-# # 6. Tune the models
-
-# In[67]:
+# In[7]:
 
 
 from sklearn.model_selection import GridSearchCV
@@ -141,77 +138,46 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 
-reports = []
+
+# # 6. Tune the models
+
+# In[24]:
 
 
-# for i in range(0, len(estimators)):
-#     params = parameters[i]
-#     estimator = estimators[i]
+for i in range(0, len(estimators)):
+    params = parameters[i]
+    estimator = estimators[i]
     
-#     print(i)
+    estimator_name = str(estimator).split('(')[0]
     
-#     model = GridSearchCV(estimator, params, cv=10, n_jobs=-1, refit=True)
-#     model.fit(X_train, y_train)
+    model = GridSearchCV(estimator, params, cv=5, n_jobs=-1, refit=True)
+    model.fit(X_train.values, y_train.values)
     
-#     pred = model.predict(np.array(X_test))
+    pred = model.predict(np.array(X_test))
     
-#     classificationReport = classification_report(np.array(y_test), np.array(pred))
+    classificationReport = classification_report(np.array(y_test), np.array(pred))
     
-#     reports.append(classification_report)
-
-
-# In[ ]:
-
-
-
-
-# from time import perf_counter_ns
-
-# start = perf_counter_ns()
-
-p = {
-        'booster'          : ['gbtree', 'gblinear','dart'],
-        'eta'              : [10**x for x in list(range(-5, -1, 1))],
-        'max_depth'        : list(range(3, 11, 1)),
-        'gamma'            : [x/10.0 for x in range(0,5)],
-        'colsample_bytree' : [x/10.0 for x in range(5,11)],
-        'nthread'          : [-1],
-    }
-
-print("Tuning XGBoost...")
-
-model = GridSearchCV(XGBClassifier(), p, cv=10, n_jobs=-1, refit=True)
-
-model.fit(np.array(X_train), np.array(y_train))
-
-pred = model.predict(np.array(X_test))
-
-
-
-CR = classification_report(np.array(y_test), np.array(pred))
-print(CR)
-print(confusion_matrix(np.array(y_test), np.array(pred)))
-print(balanced_accuracy_score(np.array(y_test), np.array(pred)))
-
-
-print("Saving Report...")
-with open("./xgboost_report.txt", 'w') as of:
-    of.write(str(model.best_estimator_))
-    of.write("\n\n")
-    of.write(str(model.best_params_))
-    of.write("\n\n")
-    of.write("Classification Report:\n" + str(CR))
-    of.write("\n\n")
-    of.write("Confusion Matrix:\t" + str(confusion_matrix(np.array(y_test), np.array(pred))))
-    of.write("\n\n")
-    of.write("Balanced Accuracy:\t" + str(balanced_accuracy_score(np.array(y_test), np.array(pred))))
-    of.write("\n\n")
-
-
-# reports.append(CR)
-
-# conf_mats.append(confusion_matrix(np.array(y_test), np.array(pred)))
-
-# bal_accs.append(balanced_accuracy_score(np.array(y_test), np.array(pred)))
-
-# print("Time:\t", (perf_counter_ns() - start)*1e-9)
+    print('-'*50)
+    print('REPORT - {} \n'.format(estimator_name))
+    print(str(classificationReport))
+    print('\n'*2)
+    report_name = "./{}_report.txt".format(estimator_name)
+    print(report_name)
+    print("Saving Report...")
+    
+    print('-'*50)
+    print('\n'*2)
+    with open(report_name, 'w') as of:
+        of.write('REPORT - {} \n'.format(estimator_name))
+        of.write('-'*50)
+        of.write(str(model.best_estimator_))
+        of.write("\n\n")
+        of.write(str(model.best_params_))
+        of.write("\n\n")
+        of.write("Classification Report:\n" + str(classificationReport))
+        of.write("\n\n")
+        of.write("Confusion Matrix:\t" + str(confusion_matrix(np.array(y_test), np.array(pred))))
+        of.write("\n\n")
+        of.write("Balanced Accuracy:\t" + str(balanced_accuracy_score(np.array(y_test), np.array(pred))))
+        of.write("\n\n")
+        of.write('-'*50)
