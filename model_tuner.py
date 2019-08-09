@@ -7,6 +7,8 @@
 
 # In[2]:
 
+import warnings
+warnings.simplefilter("ignore")
 
 import pandas as pd
 import numpy as np
