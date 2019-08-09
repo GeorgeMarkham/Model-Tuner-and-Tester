@@ -145,12 +145,14 @@ from sklearn.metrics import classification_report
 
 # In[24]:
 
-
+print("Starting to tune")
 for i in range(0, len(estimators)):
     params = parameters[i]
     estimator = estimators[i]
     
     estimator_name = str(estimator).split('(')[0]
+    
+    print("Tuning {}".format(estimator_name))
     
     model = GridSearchCV(estimator, params, cv=5, n_jobs=-1, refit=True)
     model.fit(X_train.values, y_train.values)
@@ -183,3 +185,4 @@ for i in range(0, len(estimators)):
         of.write("Balanced Accuracy:\t" + str(balanced_accuracy_score(np.array(y_test), np.array(pred))))
         of.write("\n\n")
         of.write('-'*50)
+    print("Done:\t{}%".format( (i/len(estimators)) * 100 ))
