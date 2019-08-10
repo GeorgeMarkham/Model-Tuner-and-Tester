@@ -13,6 +13,53 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from xgboost import XGBClassifier
 
+# ## 1. Get the data
+
+# In[2]:
+
+import warnings
+warnings.simplefilter("ignore")
+
+import pandas as pd
+import numpy as np
+
+# './IEMOCAP_features_2.csv'
+features_IME = pd.read_csv('https://raw.githubusercontent.com/GeorgeMarkham/Model-Tuner-and-Tester/master/IEMOCAP_features_2_short_framing.csv')
+
+# './RAVDASS_features_2.csv'
+feature_RAVDASS = pd.read_csv('https://raw.githubusercontent.com/GeorgeMarkham/Model-Tuner-and-Tester/master/RAVDASS_features_2_short_framing.csv')
+
+
+features_IME = features_IME.drop(columns=["File_Name", "Session", "val", "act", "dom", "wav_file_name"])
+feature_RAVDASS = feature_RAVDASS.drop(columns=["File_Name", "Modality", "Vocal_Channel ", "Emotional_Intensity", "Statement", "Repetition", "Actor"])
+
+data = pd.concat([features_IME, feature_RAVDASS])
+
+df = data
+
+lab = data.drop(columns = ['Signal_Mean', 'Signal_StdDeviation', 'Rms_Vec_Mean',
+      'Rms_Vec_StdDeviation', 'Autocorrelation_Max',
+      'Autocorrelation_StdDeviation', 'Silence', 'Harmonic_Mean']) #"Unnamed: 0"
+
+df = df.drop(columns=['Emotion'])
+
+
+# ## 2. Split the data into training and testing sets
+# If the data was using raw emotion values, e.g 'neu' instead of 0 then one would need to use a label encoder to encode each unique label as an integer between 0 and n_classes-1. Label encoding can be done using the Sci-Kit Learn LabelEncoder class https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html.
+
+# In[3]:
+
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+
+# le = LabelEncoder()
+# y = le.fit_transform(lab)
+y = lab
+x = df 
+
+X_train, X_test, y_train, y_test = train_test_split(x, y, random_state=42, stratify=y)
+
 #     AdaBoost
 params = {
     'base_estimator' : [GradientBoostingClassifier(), RandomForestClassifier(), SVC(), XGBClassifier()],
