@@ -21,7 +21,7 @@ feature_RAVDASS = pd.read_csv('https://raw.githubusercontent.com/GeorgeMarkham/M
 
 
 features_IME = features_IME.drop(columns=["File_Name", "Session", "val", "act", "dom", "wav_file_name"])
-feature_RAVDASS = feature_RAVDASS.drop(columns=["File_Name", "Modality", "Vocal_Channel ", "Emotional_Intensity", "Statement", "Repetition", "Actor", "Power"])
+feature_RAVDASS = feature_RAVDASS.drop(columns=["File_Name", "Modality", "Vocal_Channel ", "Emotional_Intensity", "Statement", "Repetition", "Actor"])
 
 data = pd.concat([features_IME, feature_RAVDASS])
 
