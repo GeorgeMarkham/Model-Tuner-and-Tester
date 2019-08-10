@@ -14,10 +14,10 @@ import pandas as pd
 import numpy as np
 
 # './IEMOCAP_features_2.csv'
-features_IME = pd.read_csv('https://raw.githubusercontent.com/GeorgeMarkham/Model-Tuner-and-Tester/master/IEMOCAP_features_2.csv')
+features_IME = pd.read_csv('https://raw.githubusercontent.com/GeorgeMarkham/Model-Tuner-and-Tester/master/IEMOCAP_features_2_short_framing.csv')
 
 # './RAVDASS_features_2.csv'
-feature_RAVDASS = pd.read_csv('https://raw.githubusercontent.com/GeorgeMarkham/Model-Tuner-and-Tester/master/RAVDASS_features_2.csv')
+feature_RAVDASS = pd.read_csv('https://raw.githubusercontent.com/GeorgeMarkham/Model-Tuner-and-Tester/master/RAVDASS_features_2_short_framing.csv')
 
 
 features_IME = features_IME.drop(columns=["File_Name", "Session", "val", "act", "dom", "wav_file_name"])
@@ -28,8 +28,8 @@ data = pd.concat([features_IME, feature_RAVDASS])
 df = data
 
 lab = data.drop(columns = ['Signal_Mean', 'Signal_StdDeviation', 'Rms_Vec_Mean',
-       'Rms_Vec_StdDeviation', 'Autocorrelation_Max',
-       'Autocorrelation_StdDeviation', 'Silence', 'Harmonic_Mean']) #"Unnamed: 0"
+      'Rms_Vec_StdDeviation', 'Autocorrelation_Max',
+      'Autocorrelation_StdDeviation', 'Silence', 'Harmonic_Mean']) #"Unnamed: 0"
 
 df = df.drop(columns=['Emotion'])
 
